@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥚 Steal an Egg · Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0e1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+            background-image: radial-gradient(circle at 20% 30%, #19223b 0%, #070a12 90%);
+        }
+        .dashboard {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(18, 24, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 215, 100, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .egg-icon {
+            background: #f5b042;
+            width: 48px;
+            height: 48px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #1f1a0e;
+            box-shadow: 0 8px 0 #9e6d2b;
+        }
+        h1 {
+            color: #f0e9e0;
+            font-size: 1.8rem;
+        }
+        h1 span {
+            color: #f9c96e;
+        }
+        .server-badge {
+            background: rgba(255,255,255,0.04);
+            padding: 0.5rem 1.1rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255,215,100,0.15);
+            color: #b9c3d9;
+            font-size: 0.75rem;
+        }
+        .server-badge i {
+            color: #69db7c;
+        }
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: rgba(12,17,31,0.6);
+            padding: 1.5rem;
+            border-radius: 20px;
+        }
+        .input-group input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.8rem 1.2rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            color: #f0e9e0;
+            font-size: 1rem;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #f5b042;
+        }
+        .input-group button {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #f5b042, #e69138);
+            border: none;
+            border-radius: 16px;
+            color: #0b0e1a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245,176,66,0.3);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .section-header h2 {
+            color: #f0e9e0;
+            font-size: 1.2rem;
+        }
+        .section-header h2 i {
+            color: #f5b042;
+        }
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .player-card {
+            background: rgba(12,17,31,0.6);
+            border-radius: 16px;
+            padding: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .player-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(245,176,66,0.3);
+        }
+        .player-card .name {
+            color: #f0e9e0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .player-card .stats {
+            color: #8b96b8;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+        .player-card .stats span {
+            display: inline-block;
+            margin-right: 0.8rem;
+        }
+        .online-dot {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+            width: 10px;
+            height: 10px;
+            background: #69db7c;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(105,219,124,0.5);
+        }
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 3rem;
+            color: #546180;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+        .detail-panel {
+            background: rgba(12,17,31,0.8);
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(245,176,66,0.15);
+            display: none;
+        }
+        .detail-panel .header-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .detail-panel .header-detail h3 {
+            color: #f0e9e0;
+        }
+        .detail-panel .header-detail h3 i {
+            color: #f5b042;
+        }
+        .detail-panel .close-btn {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: #8b96b8;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .detail-item {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+        .detail-item .label {
+            color: #8b96b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .detail-item .value {
+            color: #f0e9e0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+        .pet-info {
+            grid-column: 1/-1;
+            background: rgba(0,0,0,0.2);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            color: #f0e9e0;
+        }
+        .rarity-badge {
+            background: #342c4a;
+            color: #d3c6f0;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+        .footer {
+            margin-top: 1.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            justify-content: space-between;
+            color: #546180;
+            font-size: 0.7rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ffd43b;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        .status-dot.online {
+            background: #69db7c;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        @media (max-width: 600px) {
+            .dashboard { padding: 1rem; }
+            .input-group { flex-direction: column; }
+            .input-group input { min-width: unset; }
+            .input-group button { width: 100%; justify-content: center; }
+            .players-grid { grid-template-columns: 1fr 1fr; }
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="header">
+        <div class="header-left">
+            <div class="egg-icon">🥚</div>
+            <h1>Steal <span>an Egg</span></h1>
+        </div>
+        <div class="server-badge">
+            <i class="fas fa-circle" style="color:#69db7c"></i> 
+            <span id="serverStatus">🔍 Cari Server...</span>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="serverIdInput" placeholder="Masukkan Server ID (contoh: 123456789)" />
+        <button onclick="connectToServer()">🔗 Hubungkan</button>
+    </div>
+
+    <div class="section-header">
+        <h2><i class="fas fa-users"></i> Player Aktif</h2>
+        <span id="playerCount" style="color:#8b96b8;">0 player</span>
+    </div>
+    <div class="players-grid" id="playersList">
+        <div class="empty-state">
+            <div style="font-size:3rem;">👤</div>
+            <p>Belum ada player yang menjalankan script</p>
+            <p style="font-size:0.85rem;opacity:0.7;">Jalankan script Roblox untuk muncul di sini</p>
+        </div>
+    </div>
+
+    <div class="detail-panel" id="detailPanel">
+        <div class="header-detail">
+            <h3><i class="fas fa-user"></i> <span id="detailName">Player</span></h3>
+            <button class="close-btn" onclick="closeDetail()">✕</button>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="label">💰 INCOME/S</div>
+                <div class="value" id="detailIncome">0 $/s</div>
+            </div>
+            <div class="detail-item">
+                <div class="label">💳 MONEY</div>
+                <div class="value" id="detailMoney">0 $</div>
+            </div>
+            <div class="detail-item">
+                <div class="label">⚡ SPEED</div>
+                <div class="value" id="detailSpeed">0 km/h</div>
+            </div>
+            <div class="detail-item">
+                <div class="label">👑 TOP PET</div>
+                <div class="value" id="detailPet">-</div>
+            </div>
+            <div class="pet-info">
+                <span id="detailPetName">-</span>
+                <span class="rarity-badge" id="detailPetRarity">-</span>
+                <span id="detailPetIncome">0 $/s</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><span id="footerStatus">Menunggu koneksi...</span></div>
+        <div><span class="status-dot" id="statusDot"></span> <span id="connectionStatus">offline</span></div>
+    </div>
+</div>
+
+<script>
+const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000/api' 
+    : window.location.origin + '/api';
+
+let currentServerId = '';
+let refreshInterval = null;
+
+function connectToServer() {
+    const serverId = document.getElementById('serverIdInput').value.trim();
+    if (!serverId) {
+        alert('Masukkan Server ID!');
+        return;
+    }
+    currentServerId = serverId;
+    document.getElementById('serverStatus').textContent = 'Server #' + serverId;
+    document.getElementById('connectionStatus').textContent = 'online';
+    document.getElementById('connectionStatus').style.color = '#69db7c';
+    document.getElementById('statusDot').className = 'status-dot online';
+    document.getElementById('footerStatus').textContent = 'Terhubung ke server';
+    
+    fetchData();
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = setInterval(fetchData, 3000);
+}
+
+async function fetchData() {
+    if (!currentServerId) return;
+    try {
+        const res = await fetch(API_URL + '/data?serverId=' + currentServerId);
+        const data = await res.json();
+        updatePlayers(data);
+    } catch(e) {
+        console.error('Error:', e);
+    }
+}
+
+function updatePlayers(data) {
+    const players = data.players || {};
+    const total = data.totalPlayers || 0;
+    document.getElementById('playerCount').textContent = total + ' player' + (total !== 1 ? 's' : '');
+    
+    const container = document.getElementById('playersList');
+    if (total === 0) {
+        container.innerHTML = `<div class="empty-state"><div style="font-size:3rem;">👤</div><p>Belum ada player yang menjalankan script</p></div>`;
+        return;
+    }
+    
+    let html = '';
+    for (const [pid, pData] of Object.entries(players)) {
+        const stats = pData.data || {};
+        html += `
+            <div class="player-card" onclick="showDetail('${pid}')">
+                <div class="online-dot"></div>
+                <div class="name">${pData.name || 'Player'}</div>
+                <div class="stats">
+                    <span>💰 ${(stats.incomePerSecond || 0).toFixed(2)} $/s</span>
+                    <span>⚡ ${stats.speed || 0} km/h</span>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+async function showDetail(playerId) {
+    try {
+        const res = await fetch(API_URL + '/player/' + playerId + '?serverId=' + currentServerId);
+        const data = await res.json();
+        const stats = data.data || {};
+        
+        document.getElementById('detailName').textContent = data.name;
+        document.getElementById('detailIncome').textContent = (stats.incomePerSecond || 0).toFixed(2) + ' $/s';
+        document.getElementById('detailMoney').textContent = formatNumber(stats.money || 0) + ' $';
+        document.getElementById('detailSpeed').textContent = (stats.speed || 0) + ' km/h';
+        
+        if (stats.topPet) {
+            document.getElementById('detailPet').textContent = stats.topPet.name || '-';
+            document.getElementById('detailPetName').textContent = stats.topPet.name || '-';
+            document.getElementById('detailPetRarity').textContent = stats.topPet.rarity || '-';
+            document.getElementById('detailPetIncome').textContent = (stats.topPet.incomePerSecond || 0).toFixed(2) + ' $/s';
+        }
+        
+        document.getElementById('detailPanel').style.display = 'block';
+    } catch(e) {
+        console.error('Error:', e);
+    }
+}
+
+function closeDetail() {
+    document.getElementById('detailPanel').style.display = 'none';
+}
+
+function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+}
+
+// Auto connect dari URL parameter
+const params = new URLSearchParams(window.location.search);
+const serverId = params.get('server');
+if (serverId) {
+    document.getElementById('serverIdInput').value = serverId;
+    connectToServer();
+}
+</script>
+</body>
+              </html>

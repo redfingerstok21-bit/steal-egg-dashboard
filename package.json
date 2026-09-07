@@ -1,13 +1,8 @@
 {
   "name": "steal-egg-dashboard",
   "version": "1.0.0",
-  "description": "Dashboard real-time untuk Steal an Egg",
+  "description": "Real-time dashboard for Steal an Egg Roblox game",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
-  }
-}
+    "start": "node server.js",
+    "dev": "nod
